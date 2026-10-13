@@ -1,0 +1,41 @@
+Order Id,Order Status,Sales,Order Item Quantity,Shipping Mode,Days for shipment (scheduled),Days for shipping (real),Late_delivery_risk,Order Region,Customer Segment,Customer Id
+70000,SUSPECTED_FRAUD,1805.11,1,Standard Class,4,5,1,Western Europe,Home Office,9110
+70001,SUSPECTED_FRAUD,236.42,1,Same Day,2,1,1,Western Europe,Consumer,9299
+70002,ON_HOLD,1130.33,1,Second Class,2,3,1,Central America,Home Office,9061
+70003,ON_HOLD,641.44,1,Second Class,5,6,0,East of USA,Home Office,9033
+70004,ON_HOLD,4471.5,3,Same Day,5,8,1,South Asia,Corporate,9128
+70005,ON_HOLD,4929.16,5,Same Day,2,3,1,Oceania,Corporate,9038
+70006,ON_HOLD,3979.55,2,Same Day,2,4,0,Western Europe,Home Office,9294
+70007,ON_HOLD,6202.14,5,Same Day,4,3,0,South Asia,Corporate,9034
+70008,ON_HOLD,5715.29,3,Same Day,2,3,0,Oceania,Corporate,9087
+70009,ON_HOLD,2707.45,2,Second Class,5,7,1,Oceania,Consumer,9086
+70010,ON_HOLD,810.99,4,First Class,4,6,1,Oceania,Consumer,9078
+70011,ON_HOLD,400.72,1,Same Day,2,5,0,South Asia,Corporate,9003
+70012,ON_HOLD,6431.04,2,Standard Class,2,4,1,East of USA,Corporate,9204
+70013,ON_HOLD,7778.27,1,Second Class,4,3,0,Oceania,Consumer,9057
+70014,ON_HOLD,1173.32,5,Standard Class,4,5,1,Western Europe,Consumer,9107
+70015,ON_HOLD,9612.91,5,First Class,5,7,0,Western Europe,Corporate,9239
+70016,PENDING,960.58,3,First Class,4,6,1,Central America,Home Office,9012
+70017,PENDING,1810.79,5,Standard Class,2,5,1,Western Europe,Home Office,9134
+70018,PENDING,747.39,5,First Class,5,5,1,Central America,Consumer,9206
+70019,PENDING,4399.02,3,Standard Class,5,4,1,Oceania,Corporate,9100
+70020,PENDING,6131.37,3,Standard Class,5,5,0,Central America,Corporate,9101
+70021,PENDING,451.96,4,First Class,4,3,1,Western Europe,Corporate,9103
+70022,PENDING,7207.1,1,Same Day,4,6,1,Western Europe,Home Office,9082
+70023,PENDING,2330.59,2,Same Day,2,3,0,East of USA,Home Office,9068
+70024,PENDING,105.92,5,Second Class,2,4,0,Central America,Consumer,9129
+70025,PENDING,4886.47,3,Same Day,2,2,0,South Asia,Corporate,9299
+70026,PENDING,845.54,5,Second Class,5,8,1,Western Europe,Corporate,9094
+70027,PENDING,87.16,2,Same Day,5,8,1,Western Europe,Home Office,9032
+70028,PENDING,8368.72,1,Standard Class,4,4,0,South Asia,Consumer,9051
+70029,PENDING,902.96,4,First Class,5,8,1,East of USA,Home Office,9103
+70030,PROCESSING,8097.87,5,Second Class,5,8,1,East of USA,Consumer,9230
+70031,PROCESSING,6708.37,1,Second Class,2,4,0,Central America,Home Office,9156
+70032,PROCESSING,3853.36,2,First Class,2,2,1,Central America,Home Office,9049
+70033,PROCESSING,1690.58,2,Same Day,4,7,1,South Asia,Corporate,9101
+70034,PROCESSING,659.72,3,Same Day,4,6,1,Western Europe,Corporate,9170
+70035,PROCESSING,1215.55,1,Second Class,5,4,0,South Asia,Corporate,9021
+70036,PROCESSING,3554.67,3,Same Day,2,2,1,East of USA,Home Office,9254
+70037,PROCESSING,675.23,4,Standard Class,5,6,0,Western Europe,Corporate,9043
+70038,PROCESSING,1638.34,4,Standard Class,5,6,1,Oceania,Corporate,9067
+70039,PROCESSING,1038.99,2,First Class,2,1,0,Central America,Corporate,9157

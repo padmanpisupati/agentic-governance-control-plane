@@ -1,0 +1,8 @@
+# Runtime
+PyYAML>=6.0
+# Optional: real OpenTelemetry spans (falls back to a no-op tracer if absent)
+opentelemetry-api>=1.20
+# Optional: LangGraph integration example (falls back to a sequential runner if absent)
+langgraph>=0.2
+# Dev
+pytest>=8

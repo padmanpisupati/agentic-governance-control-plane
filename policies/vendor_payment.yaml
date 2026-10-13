@@ -1,0 +1,65 @@
+# Policy bundle for an accounts-payable agent releasing vendor payments.
+bundle: vendor-payment
+version: 1.0.0
+owner: procure-to-pay process owner
+actions:
+  - ap.release_payment
+  - ap.post_ledger_entry
+  - ap.schedule_transfer
+  - ap.place_hold
+  - ap.update_bank_details
+  - agcp.rollback
+rules:
+  - id: AP-GEN-001
+    description: Never pay a vendor that is not active and verified
+    effect: DENY
+    when: {action: ["ap.release_payment", "ap.schedule_transfer"], resource.vendor_status: {ne: ACTIVE}}
+  - id: AP-GEN-003
+    description: Agents must report a confidence score for payment releases
+    effect: DENY
+    when: {action: ap.release_payment, actor.kind: agent, confidence: {exists: false}}
+  - id: AP-GEN-002
+    description: Bank-detail changes by agents are prohibited (fraud vector)
+    effect: DENY
+    when: {action: ap.update_bank_details, actor.kind: agent}
+  - id: AP-BK-001
+    description: Bank-detail changes by humans need two approvers
+    effect: REQUIRE_APPROVAL
+    when: {action: ap.update_bank_details, actor.kind: human}
+    approval: {role: manager, min_approvers: 2}
+  - id: AP-PAY-001
+    description: Auto-release matched invoices up to 5,000 (3-way match variance within 2%)
+    effect: ALLOW
+    when: {action: ap.release_payment, value: {lte: 5000}, resource.match_variance_pct: {lte: 2.0}, confidence: {gte: 0.9}}
+  - id: AP-PAY-002
+    description: Larger or unmatched payments need approval routed by value tier
+    effect: REQUIRE_APPROVAL
+    when: {action: ap.release_payment, value: {gt: 5000}}
+  - id: AP-PAY-003
+    description: Match variance above 2% needs approval
+    effect: REQUIRE_APPROVAL
+    when: {action: ap.release_payment, resource.match_variance_pct: {gt: 2.0}}
+  - id: AP-PAY-004
+    description: Variance above 10% is never paid by an agent
+    effect: DENY
+    when: {action: ap.release_payment, resource.match_variance_pct: {gt: 10.0}, actor.kind: agent}
+  - id: AP-PAY-005
+    description: Payment sub-steps run only inside a released payment
+    effect: ALLOW
+    when: {action: [ap.post_ledger_entry, ap.schedule_transfer], actor.role: {in: [payment_service]}}
+  - id: AP-HOLD-001
+    description: Agents may always place a payment hold (safe direction)
+    effect: ALLOW
+    when: {action: ap.place_hold}
+  - id: AP-RB-001
+    description: Treasury ops may roll back
+    effect: ALLOW
+    when: {action: agcp.rollback, actor.role: {in: [ops_admin, director]}}
+approval_routing:
+  roles: [ap_clerk, manager, director, cfo]
+  tiers:
+    - {max_value: 5000, role: ap_clerk}
+    - {max_value: 50000, role: manager}
+    - {max_value: null, role: director, min_approvers: 2}
+  escalation: {ap_clerk: manager, manager: director, director: cfo}
+  default_ttl_minutes: 1440

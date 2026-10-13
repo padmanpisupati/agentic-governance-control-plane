@@ -1,0 +1,76 @@
+# Policy bundle for an order-exception agent acting on an ERP-style order system.
+# Any action not listed under `actions` is default-denied.
+bundle: order-exception
+version: 1.0.0
+owner: order-to-cash process owner
+actions:
+  - erp.release_credit_hold
+  - erp.upgrade_shipping
+  - erp.reserve_stock
+  - erp.update_promise_date
+  - erp.cancel_order
+  - agcp.rollback
+rules:
+  - id: OE-GEN-001
+    description: Agents may not act on low-confidence recommendations
+    effect: DENY
+    when: {action: "erp.*", actor.kind: agent, confidence: {lt: 0.6}}
+  - id: OE-GEN-003
+    description: Agents must report a confidence score (fail closed if missing)
+    effect: DENY
+    when: {action: "erp.*", actor.kind: agent, confidence: {exists: false}}
+  - id: OE-GEN-002
+    description: No writes to orders flagged as suspected fraud
+    effect: DENY
+    when: {action: "erp.*", resource.status: SUSPECTED_FRAUD}
+  - id: OE-CR-001
+    description: Auto-release credit holds up to 2,000 with high confidence
+    effect: ALLOW
+    when: {action: erp.release_credit_hold, resource.status: ON_HOLD, value: {lte: 2000}, confidence: {gte: 0.85}}
+  - id: OE-CR-002
+    description: Credit releases above 2,000 need a credit manager
+    effect: REQUIRE_APPROVAL
+    when: {action: erp.release_credit_hold, value: {gt: 2000}}
+    approval: {role: manager, ttl_minutes: 240}
+  - id: OE-CR-003
+    description: Credit releases below 0.85 confidence need review
+    effect: REQUIRE_APPROVAL
+    when: {action: erp.release_credit_hold, confidence: {lt: 0.85}}
+  - id: OE-SH-001
+    description: Expedite shipping for at-risk orders up to 150 incremental cost
+    effect: ALLOW
+    when: {action: erp.upgrade_shipping, value: {lte: 150}, resource.late_delivery_risk: 1}
+  - id: OE-SH-002
+    description: Expedite above 150 incremental cost needs approval
+    effect: REQUIRE_APPROVAL
+    when: {action: erp.upgrade_shipping, value: {gt: 150}}
+  - id: OE-ST-001
+    description: Stock reallocation and promise-date changes allowed in business hours (UTC)
+    effect: ALLOW
+    when:
+      action: [erp.reserve_stock, erp.update_promise_date]
+      time_window: {days: [mon, tue, wed, thu, fri], start: "06:00", end: "20:00", tz_offset_minutes: 0}
+  - id: OE-ST-002
+    description: Off-hours stock and promise changes need an on-call lead
+    effect: REQUIRE_APPROVAL
+    when:
+      action: [erp.reserve_stock, erp.update_promise_date]
+      time_window: {days: [mon, tue, wed, thu, fri], start: "06:00", end: "20:00", tz_offset_minutes: 0, outside: true}
+    approval: {role: team_lead}
+  - id: OE-CX-001
+    description: Cancellations always need a human, two approvers above 10,000
+    effect: REQUIRE_APPROVAL
+    when: {action: erp.cancel_order}
+    approval: {role: manager}
+  - id: OE-RB-001
+    description: Rollback may be triggered by operations admins and managers
+    effect: ALLOW
+    when: {action: agcp.rollback, actor.role: {in: [ops_admin, manager, director]}}
+approval_routing:
+  roles: [team_lead, manager, director, cfo]
+  tiers:
+    - {max_value: 1000, role: team_lead}
+    - {max_value: 10000, role: manager}
+    - {max_value: null, role: director, min_approvers: 2}
+  escalation: {team_lead: manager, manager: director, director: cfo}
+  default_ttl_minutes: 240
